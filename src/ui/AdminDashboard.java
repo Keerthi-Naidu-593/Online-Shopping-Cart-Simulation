@@ -9,6 +9,8 @@
  */
 package ui;
 
+import java.awt.Color;
+import java.awt.Font;
 import models.User;
 import javax.swing.*;
 
@@ -19,7 +21,7 @@ public class AdminDashboard extends JFrame {
     public AdminDashboard(User currentAdmin) {
         this.currentAdmin = currentAdmin;
 
-        setTitle("Admin Dashboard - " + currentAdmin.getUsername());
+        setTitle("ShopVibe Admin Dashboard - " + currentAdmin.getUsername());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 700);
         setLocationRelativeTo(null);
@@ -37,6 +39,7 @@ public class AdminDashboard extends JFrame {
         topPanel.add(titleLabel, java.awt.BorderLayout.WEST);
 
         JLabel userLabel = new JLabel("Admin: " + currentAdmin.getUsername());
+        userLabel.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
         userLabel.setForeground(java.awt.Color.WHITE);
         topPanel.add(userLabel, java.awt.BorderLayout.CENTER);
 
@@ -50,8 +53,15 @@ public class AdminDashboard extends JFrame {
         add(topPanel, java.awt.BorderLayout.NORTH);
 
         // Tabs
+        
         tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(UITheme.BG_SECONDARY);
+        Font tabFont = new Font("Segoe UI", Font.BOLD, 14);
+        tabbedPane.setFont(tabFont);
+        UIManager.put("TabbedPane.foreground", Color.DARK_GRAY);       // text color
+        UIManager.put("TabbedPane.selectedForeground", new Color(0,120,215)); // selected tab text color
+        UIManager.put("TabbedPane.background", new Color(245, 245, 245)); // background color
+        UIManager.put("TabbedPane.selectedBackground",new Color(230, 240, 255)); // selected tab background
 
         tabbedPane.addTab("Manage Products", new AdminProductPanel());
         tabbedPane.addTab("View Orders", new AdminOrdersPanel());

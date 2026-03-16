@@ -60,7 +60,10 @@ public class ProductCatalogPanel extends JPanel {
         gbc.gridy = 0;
         gbc.gridwidth = 4;
         headerPanel.add(heading, gbc);
-
+        
+        
+        UIManager.put("Label.font", new Font("Arial", Font.BOLD, 15));
+        UIManager.put("Label.foreground", new Color(0, 120, 2));
         // Search Section
         JLabel searchLabel = new JLabel("Search:");
         gbc.gridx = 0;
@@ -121,7 +124,7 @@ public class ProductCatalogPanel extends JPanel {
 
         productTable = new JTable(tableModel);
         productTable = new JTable(tableModel);
-
+        
 JTableHeader header = productTable.getTableHeader();
 header.setPreferredSize(new Dimension(100, 35));
 
@@ -140,8 +143,8 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         productTable.setBackground(Color.WHITE);
         productTable.setGridColor(new Color(224, 224, 224));
-        productTable.setFont(new Font("Arial", Font.PLAIN, 11));
-        productTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        productTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        productTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         productTable.getTableHeader().setBackground(new Color(44, 62, 80));
         productTable.getTableHeader().setForeground(Color.WHITE);
 
@@ -157,7 +160,7 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 20, 15));
 
         JLabel qtyLabel = new JLabel("Quantity:");
-        qtyLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        qtyLabel.setFont(new Font("Arial", Font.BOLD, 15));
         bottomPanel.add(qtyLabel);
 
         quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
@@ -246,17 +249,23 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         }
 
         int productId = (Integer) tableModel.getValueAt(selectedRow, 0);
-        int quantity = (Integer) quantitySpinner.getValue();
-
+        
+        int quantity = Integer.parseInt(((JSpinner.DefaultEditor) quantitySpinner.getEditor()).getTextField().getText());
         Product selectedProduct = allProducts.stream()
                 .filter(p -> p.getId() == productId)
                 .findFirst()
                 .orElse(null);
 
-        if (selectedProduct == null || selectedProduct.getStock() < quantity) {
-            JOptionPane.showMessageDialog(this, "❌ Insufficient stock!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (selectedProduct == null) {
+        return;
         }
+
+       if (quantity > selectedProduct.getStock()) {
+           JOptionPane.showMessageDialog(this,
+            "❌ Only " + selectedProduct.getStock() + " items available!",
+            "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+          }
 
         try (Connection con = DatabaseConnection.getConnection()) {
             

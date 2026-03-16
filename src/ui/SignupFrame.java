@@ -26,7 +26,7 @@ public class SignupFrame extends JFrame {
     }
 
     private void initializeFrame() {
-        setTitle("Shopping Cart - Register");
+        setTitle("ShopVibe - Register");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 750);
         setLocationRelativeTo(null);

@@ -25,7 +25,7 @@ public class LoginFrame extends JFrame {
     }
 
     private void initializeFrame() {
-        setTitle("Shopping Cart - Login");
+        setTitle("ShopVibe - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -48,7 +48,7 @@ public class LoginFrame extends JFrame {
         leftPanel.add(logoLabel);
         leftPanel.add(Box.createVerticalStrut(20));*/
 
-        JLabel titleLabel = new JLabel("Shopping Cart");
+        JLabel titleLabel = new JLabel("ShopVibe");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

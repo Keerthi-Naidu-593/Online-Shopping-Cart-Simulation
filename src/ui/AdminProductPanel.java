@@ -23,7 +23,7 @@ public class AdminProductPanel extends JPanel {
     private JComboBox<String> categoryField;
     private int selectedProductId = -1;
     private JLabel statusLabel;
-
+   
     public AdminProductPanel() {
         setupUI();
         loadProducts();
@@ -69,8 +69,8 @@ public class AdminProductPanel extends JPanel {
         productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         productTable.setBackground(Color.WHITE);
         productTable.setGridColor(new Color(224, 224, 224));
-        productTable.setFont(new Font("Arial", Font.PLAIN, 11));
-        productTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        productTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        productTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         productTable.getTableHeader().setBackground(new Color(44, 62, 80));
         productTable.getTableHeader().setForeground(Color.WHITE);
 
@@ -81,7 +81,7 @@ public class AdminProductPanel extends JPanel {
                 if (row >= 0) {
                     selectedProductId = (Integer) tableModel.getValueAt(row, 0);
                     loadSelectedProduct();
-                    statusLabel.setText("✓ Product selected. Click Update or Delete.");
+                    statusLabel.setText("*Product selected. Click Update or Delete.");
                 }
             }
         });
@@ -98,13 +98,14 @@ public class AdminProductPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
+        UIManager.put("Label.font", new Font("Arial", Font.BOLD, 15));
+        UIManager.put("Label.foreground", new Color(0, 120, 215));
         // Row 1
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(new JLabel("Product Name:"), gbc);
         nameField = new JTextField(15);
-        nameField.setFont(new Font("Arial", Font.PLAIN, 12));
+        nameField.setFont(new Font("Arial", Font.PLAIN,13 ));
         gbc.gridx = 1;
         formPanel.add(nameField, gbc);
 
@@ -121,7 +122,7 @@ public class AdminProductPanel extends JPanel {
         gbc.gridy = 1;
         formPanel.add(new JLabel("Description:"), gbc);
         descField = new JTextField(15);
-        descField.setFont(new Font("Arial", Font.PLAIN, 12));
+        descField.setFont(new Font("Arial", Font.PLAIN, 13));
         gbc.gridx = 1;
         gbc.gridwidth = 3;
         formPanel.add(descField, gbc);
@@ -132,21 +133,21 @@ public class AdminProductPanel extends JPanel {
         gbc.gridwidth = 1;
         formPanel.add(new JLabel("Price (₹):"), gbc);
         priceField = new JTextField(10);
-        priceField.setFont(new Font("Arial", Font.PLAIN, 12));
+        priceField.setFont(new Font("Arial", Font.PLAIN, 13));
         gbc.gridx = 1;
         formPanel.add(priceField, gbc);
 
         gbc.gridx = 2;
         formPanel.add(new JLabel("Stock:"), gbc);
         stockField = new JTextField(10);
-        stockField.setFont(new Font("Arial", Font.PLAIN, 12));
+        stockField.setFont(new Font("Arial", Font.PLAIN, 13));
         gbc.gridx = 3;
         formPanel.add(stockField, gbc);
 
         // Status Label
         statusLabel = new JLabel("Select a product from table to edit");
-        statusLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-        statusLabel.setForeground(new Color(52, 152, 219));
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        statusLabel.setForeground(new Color(0, 120, 2));
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 4;

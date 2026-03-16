@@ -75,7 +75,7 @@ public class OrderHistoryPanel extends JPanel {
         ordersTable.setBackground(Color.WHITE);
         ordersTable.setGridColor(new Color(224, 224, 224));
         ordersTable.setFont(new Font("Arial", Font.PLAIN, 12));
-        ordersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        ordersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         ordersTable.getTableHeader().setBackground(new Color(44, 62, 80));
         ordersTable.getTableHeader().setForeground(Color.WHITE);
 

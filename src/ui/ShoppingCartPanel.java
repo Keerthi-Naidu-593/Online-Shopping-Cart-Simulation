@@ -94,7 +94,7 @@ public class ShoppingCartPanel extends JPanel {
         cartTable.setBackground(Color.WHITE);
         cartTable.setGridColor(new Color(224, 224, 224));
         cartTable.setFont(new Font("Arial", Font.PLAIN, 12));
-        cartTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        cartTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         cartTable.getTableHeader().setBackground(new Color(44, 62, 80));
         cartTable.getTableHeader().setForeground(Color.WHITE);
 
@@ -224,9 +224,18 @@ public class ShoppingCartPanel extends JPanel {
     }
 
     private void proceedToCheckout() {
+        // RELOAD CART BEFORE CHECKOUT
+        loadCart();
+
         if (cartItems.isEmpty()) {
             JOptionPane.showMessageDialog(this, "❌ Cart is empty!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        System.out.println("✓ Proceeding to checkout with " + cartItems.size() + " items");
+        System.out.println("✓ Cart items: ");
+        for (CartItem item : cartItems) {
+            System.out.println("  - " + item.getProduct().getName() + " x" + item.getQuantity());
         }
 
         new CheckoutFrame(currentUser, new ArrayList<>(cartItems));
