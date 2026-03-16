@@ -49,7 +49,7 @@ A complete **Java Swing-based e-commerce application** with user authentication,
 | **Backend** | Java |
 | **Database** | MySQL 8.0+ |
 | **PDF Generation** | iTextPDF 5.5.13.3 |
-| **JDBC Driver** | MySQL Connector 8.0.33 |
+| **JDBC Driver** | MySQL Connector 9.6.0 |
 | **Build Tool** | Apache Ant |
 
 ---
@@ -82,7 +82,7 @@ ShoppingCartApp/
 │   │   └── BillGenerator.java
 │   └── Main.java
 ├── lib/
-│   ├── mysql-connector-j-8.0.33.jar
+│   ├── mysql-connector-j-9.6.0.jar
 │   └── itextpdf-5.5.13.3.jar
 ├── build.xml
 └── README.md
