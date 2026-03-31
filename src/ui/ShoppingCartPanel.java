@@ -207,6 +207,27 @@ public class ShoppingCartPanel extends JPanel {
     }
 
     private void clearCart() {
+        
+         try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement checkStmt = con.prepareStatement(
+                 "SELECT COUNT(*) FROM cart WHERE user_id = ?")) {
+
+        checkStmt.setInt(1, currentUser.getId());
+        ResultSet rs = checkStmt.executeQuery();
+
+        if (rs.next() && rs.getInt(1) == 0) {
+            JOptionPane.showMessageDialog(this,
+                    " Cart is already empty!",
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return; // ❗ STOP HERE
+        }
+
+    } catch (SQLException ex) {
+        System.err.println(" Error checking cart: " + ex.getMessage());
+        return;
+    }
+
         int option = JOptionPane.showConfirmDialog(this, "Clear entire cart?", "Confirm", JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {

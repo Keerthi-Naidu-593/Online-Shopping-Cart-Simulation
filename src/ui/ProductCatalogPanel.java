@@ -30,6 +30,9 @@ public class ProductCatalogPanel extends JPanel {
     private User currentUser;
     private Runnable cartUpdateCallback;
     private JLabel cartCountLabel;
+    private JLabel descriptionLabel;
+    private JLabel cartQtyLabel;
+    private JLabel availableQtyLabel;
 
     public ProductCatalogPanel(User currentUser, Runnable cartUpdateCallback) {
         this.currentUser = currentUser;
@@ -147,13 +150,53 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         productTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         productTable.getTableHeader().setBackground(new Color(44, 62, 80));
         productTable.getTableHeader().setForeground(Color.WHITE);
-
+        productTable.getSelectionModel().addListSelectionListener(e -> {
+    if (!e.getValueIsAdjusting()) {
+        showItemDetails();
+    }
+});
         JScrollPane scrollPane = new JScrollPane(productTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199), 1));
         scrollPane.getViewport().setBackground(Color.WHITE);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.CENTER);
+        // ===== INFO PANEL =====
+JPanel infoPanel = new JPanel();
+infoPanel.setBackground(Color.WHITE);
+infoPanel.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createTitledBorder("Selected Item Details"),
+        BorderFactory.createEmptyBorder(10, 15, 10, 15)
+));
+infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
+// Description
+JLabel descLabel = new JLabel("Description:");
+descLabel.setFont(new Font("Arial", Font.BOLD, 14));
+infoPanel.add(descLabel);
+
+descriptionLabel = new JLabel("Select a product to view description");
+descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+descriptionLabel.setForeground(new Color(80,80,80));
+infoPanel.add(descriptionLabel);
+
+infoPanel.add(Box.createVerticalStrut(10));
+
+// Quantity Info
+JPanel qtyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
+qtyPanel.setBackground(Color.WHITE);
+
+cartQtyLabel = new JLabel("In Cart: 0");
+cartQtyLabel.setForeground(new Color(46, 204, 113));
+qtyPanel.add(cartQtyLabel);
+
+availableQtyLabel = new JLabel("Available: 0");
+availableQtyLabel.setForeground(new Color(52, 152, 219));
+qtyPanel.add(availableQtyLabel);
+
+infoPanel.add(qtyPanel);
+
+// ADD TO PANEL
+add(infoPanel, BorderLayout.SOUTH);
         // Bottom Panel
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.WHITE);
@@ -172,7 +215,11 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         addBtn.addActionListener(e -> addToCart());
         bottomPanel.add(addBtn);
 
-        add(bottomPanel, BorderLayout.SOUTH);
+        JPanel southPanel = new JPanel(new BorderLayout());
+southPanel.add(infoPanel, BorderLayout.CENTER);
+southPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+add(southPanel, BorderLayout.SOUTH);
     }
 
     private void loadProducts() {
@@ -240,7 +287,55 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
         categoryFilter.setSelectedIndex(0);
         loadProducts();
     }
+private void showItemDetails() {
+    int selectedRow = productTable.getSelectedRow();
+    if (selectedRow < 0) {
+        descriptionLabel.setText("Select a product to view description");
+        cartQtyLabel.setText("In Cart: 0");
+        availableQtyLabel.setText("Available: 0");
+        return;
+    }
 
+    int productId = (Integer) tableModel.getValueAt(selectedRow, 0);
+
+    Product selectedProduct = allProducts.stream()
+            .filter(p -> p.getId() == productId)
+            .findFirst()
+            .orElse(null);
+
+    if (selectedProduct == null) return;
+
+    String desc = selectedProduct.getDescription();
+    if (desc == null || desc.trim().isEmpty()) {
+        desc = "No description available";
+    }
+
+    descriptionLabel.setText(desc);
+    availableQtyLabel.setText("Available: " + selectedProduct.getStock());
+
+    int cartQty = getProductCartQuantity(productId);
+    cartQtyLabel.setText("In Cart: " + cartQty);
+}
+
+private int getProductCartQuantity(int productId) {
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement stmt = con.prepareStatement(
+                 "SELECT quantity FROM cart WHERE user_id = ? AND product_id = ?")) {
+
+        stmt.setInt(1, currentUser.getId());
+        stmt.setInt(2, productId);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return rs.getInt("quantity");
+        }
+
+    } catch (SQLException ex) {
+        System.err.println("✗ Error: " + ex.getMessage());
+    }
+
+    return 0;
+}
         private void addToCart() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow < 0) {
@@ -317,7 +412,8 @@ header.setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             quantitySpinner.setValue(1);
             productTable.clearSelection();
             updateCartCount();
-            cartUpdateCallback.run();
+showItemDetails(); // ADD THIS LINE
+cartUpdateCallback.run();
 
         } catch (SQLException ex) {
             System.err.println("✗ Error: " + ex.getMessage());

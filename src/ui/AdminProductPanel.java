@@ -23,7 +23,8 @@ public class AdminProductPanel extends JPanel {
     private JComboBox<String> categoryField;
     private int selectedProductId = -1;
     private JLabel statusLabel;
-   
+    private JLabel totalLabel;
+    
     public AdminProductPanel() {
         setupUI();
         loadProducts();
@@ -35,10 +36,22 @@ public class AdminProductPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Heading
-        JLabel heading = new JLabel("Manage Products");
-        heading.setFont(new Font("Arial", Font.BOLD, 20));
-        heading.setForeground(new Color(44, 62, 80));
-        add(heading, BorderLayout.NORTH);
+        JPanel topPanel = new JPanel(new BorderLayout());
+topPanel.setBackground(new Color(240, 240, 240));
+
+JLabel heading = new JLabel("Manage Products");
+heading.setFont(new Font("Arial", Font.BOLD, 20));
+heading.setForeground(new Color(44, 62, 80));
+
+totalLabel = new JLabel("Total Products: 0");
+totalLabel.setFont(new Font("Arial", Font.BOLD, 15));
+totalLabel.setForeground(new Color(46, 204, 113));
+totalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+topPanel.add(heading, BorderLayout.WEST);
+topPanel.add(totalLabel, BorderLayout.EAST);
+
+add(topPanel, BorderLayout.NORTH);
 
         // Table
         String[] columns = {"ID", "Name", "Category", "Price (₹)", "Stock"};
@@ -187,7 +200,9 @@ public class AdminProductPanel extends JPanel {
              Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT * FROM products ORDER BY id");
             tableModel.setRowCount(0);
+            int count = 0;
             while (rs.next()) {
+                count++;
                 tableModel.addRow(new Object[]{
                     rs.getInt("id"),
                     rs.getString("name"),
@@ -196,6 +211,7 @@ public class AdminProductPanel extends JPanel {
                     rs.getInt("stock")
                 });
             }
+            totalLabel.setText("Total Products: " + count);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error loading products: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -225,23 +241,48 @@ public class AdminProductPanel extends JPanel {
             return;
         }
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "INSERT INTO products (name, description, price, stock, category) VALUES (?, ?, ?, ?, ?)")) {
-            stmt.setString(1, nameField.getText());
-            stmt.setString(2, descField.getText());
-            stmt.setDouble(3, Double.parseDouble(priceField.getText()));
-            stmt.setInt(4, Integer.parseInt(stockField.getText()));
-            stmt.setString(5, (String) categoryField.getSelectedItem());
-            stmt.executeUpdate();
-            statusLabel.setText("✓ Product added successfully");
-            JOptionPane.showMessageDialog(this, "✓ Product added", "Success", JOptionPane.INFORMATION_MESSAGE);
-            loadProducts();
-            clearForm();
-        } catch (SQLException ex) {
-            statusLabel.setText("❌ Error: " + ex.getMessage());
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+       try (Connection con = DatabaseConnection.getConnection()) {
+
+    // ✅ CHECK DUPLICATE
+    PreparedStatement checkStmt = con.prepareStatement(
+            "SELECT COUNT(*) FROM products WHERE name = ? AND description = ?");
+
+    checkStmt.setString(1, nameField.getText());
+    checkStmt.setString(2, descField.getText());
+
+    ResultSet rs = checkStmt.executeQuery();
+
+    if (rs.next() && rs.getInt(1) > 0) {
+        statusLabel.setText(" Product already exists");
+        JOptionPane.showMessageDialog(this,
+                "Product with same name and description already exists!",
+                "Duplicate Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // ✅ INSERT (your original code)
+    PreparedStatement stmt = con.prepareStatement(
+            "INSERT INTO products (name, description, price, stock, category) VALUES (?, ?, ?, ?, ?)");
+
+    stmt.setString(1, nameField.getText());
+    stmt.setString(2, descField.getText());
+    stmt.setDouble(3, Double.parseDouble(priceField.getText()));
+    stmt.setInt(4, Integer.parseInt(stockField.getText()));
+    stmt.setString(5, (String) categoryField.getSelectedItem());
+
+    stmt.executeUpdate();
+
+    statusLabel.setText("✓ Product added successfully");
+    JOptionPane.showMessageDialog(this, "✓ Product added", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+    loadProducts();
+    clearForm();
+
+} catch (SQLException ex) {
+    statusLabel.setText("❌ Error: " + ex.getMessage());
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
     }
 
     private void updateProduct() {

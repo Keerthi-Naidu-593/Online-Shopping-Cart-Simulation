@@ -72,7 +72,9 @@ public class CustomerDashboard extends JFrame {
         // Order History Tab
         OrderHistoryPanel historyPanel = new OrderHistoryPanel(currentUser);
         tabbedPane.addTab("Order History", historyPanel);
-
+        
+        tabbedPane.addTab("Settings", new CustomerSettingsPanel(currentUser));
+        
         add(tabbedPane, java.awt.BorderLayout.CENTER);
 
         setVisible(true);

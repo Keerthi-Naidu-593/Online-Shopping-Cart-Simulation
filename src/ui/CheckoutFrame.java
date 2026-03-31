@@ -247,6 +247,8 @@ public class CheckoutFrame extends JFrame {
         return panel;
     }
 
+    
+           
     private void confirmOrder() {
         if (cartItems.isEmpty()) {
             JOptionPane.showMessageDialog(this, "❌ Cart is empty!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -270,8 +272,9 @@ public class CheckoutFrame extends JFrame {
 
             System.out.println("✓ Order created with ID: " + orderId);
 
-            // Add Order Items
+            // Add Order Items AND REDUCE STOCK
             for (CartItem item : cartItems) {
+                // Insert order item
                 PreparedStatement itemStmt = con.prepareStatement(
                         "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
                 itemStmt.setInt(1, orderId);
@@ -279,6 +282,15 @@ public class CheckoutFrame extends JFrame {
                 itemStmt.setInt(3, item.getQuantity());
                 itemStmt.setDouble(4, item.getProduct().getPrice());
                 itemStmt.executeUpdate();
+
+                // REDUCE STOCK IN PRODUCTS TABLE
+                PreparedStatement updateStockStmt = con.prepareStatement(
+                        "UPDATE products SET stock = stock - ? WHERE id = ?");
+                updateStockStmt.setInt(1, item.getQuantity());
+                updateStockStmt.setInt(2, item.getProduct().getId());
+                updateStockStmt.executeUpdate();
+
+                System.out.println("✓ Stock reduced for product ID: " + item.getProduct().getId() + " by " + item.getQuantity());
             }
 
             System.out.println("✓ Order items inserted");
@@ -305,7 +317,7 @@ public class CheckoutFrame extends JFrame {
             dispose();
 
         } catch (SQLException ex) {
-            System.err.println(" Error: " + ex.getMessage());
+            System.err.println("✗ Error: " + ex.getMessage());
             JOptionPane.showMessageDialog(this, "❌ Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

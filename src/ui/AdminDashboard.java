@@ -17,7 +17,7 @@ import javax.swing.*;
 public class AdminDashboard extends JFrame {
     private User currentAdmin;
     private JTabbedPane tabbedPane;
-
+    
     public AdminDashboard(User currentAdmin) {
         this.currentAdmin = currentAdmin;
 
@@ -65,7 +65,7 @@ public class AdminDashboard extends JFrame {
 
         tabbedPane.addTab("Manage Products", new AdminProductPanel());
         tabbedPane.addTab("View Orders", new AdminOrdersPanel());
-
+        tabbedPane.addTab("Users",new AdminUserPanel(currentAdmin));
         add(tabbedPane, java.awt.BorderLayout.CENTER);
 
         setVisible(true);
