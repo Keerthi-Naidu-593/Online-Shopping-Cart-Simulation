@@ -36,7 +36,7 @@ public class AdminUserPanel extends JPanel {
         JLabel heading = new JLabel("Manage Users");
         heading.setFont(new Font("Arial", Font.BOLD, 20));
         heading.setForeground(new Color(44, 62, 80));
-
+  
         totalLabel = new JLabel("Total Users: 0");
         totalLabel.setFont(new Font("Arial", Font.BOLD, 15));
         totalLabel.setForeground(new Color(46, 204, 113));
@@ -57,7 +57,8 @@ public class AdminUserPanel extends JPanel {
         };
 
         userTable = new JTable(tableModel);
-
+        userTable.getTableHeader().setReorderingAllowed(false);
+        userTable.getTableHeader().setResizingAllowed(false);
         JTableHeader header = userTable.getTableHeader();
         header.setPreferredSize(new Dimension(100, 35));
 

@@ -379,7 +379,7 @@ private int getProductCartQuantity(int productId) {
                 // Check if new quantity exceeds stock
                 if (newQuantity > selectedProduct.getStock()) {
                     JOptionPane.showMessageDialog(this, 
-                        "❌ Cannot add! Only " + selectedProduct.getStock() + " items available.", 
+                        " Cannot add! Only " + selectedProduct.getStock() + " items available.", 
                         "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -390,10 +390,14 @@ private int getProductCartQuantity(int productId) {
                 updateStmt.setInt(2, currentUser.getId());
                 updateStmt.setInt(3, productId);
                 updateStmt.executeUpdate();
-
-                JOptionPane.showMessageDialog(this, 
-                    "✅ Quantity updated! Now " + newQuantity + "x " + selectedProduct.getName(), 
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                
+                JOptionPane.showMessageDialog(
+    this,
+    "<html>Quantity updated!<br>Now " + newQuantity + "x " + selectedProduct.getName() + "</html>",
+    "Success",
+    JOptionPane.INFORMATION_MESSAGE
+);
+               
 
             } else {
                 // Product NOT in cart - INSERT new
@@ -405,7 +409,7 @@ private int getProductCartQuantity(int productId) {
                 insertStmt.executeUpdate();
 
                 JOptionPane.showMessageDialog(this, 
-                    "✅ " + quantity + "x " + selectedProduct.getName() + " added!", 
+                     quantity + "x " + selectedProduct.getName() + " added!", 
                     "Success", JOptionPane.INFORMATION_MESSAGE);
             }
 

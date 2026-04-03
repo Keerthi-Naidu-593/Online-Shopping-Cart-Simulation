@@ -67,6 +67,8 @@ public class OrderHistoryPanel extends JPanel {
 
         
         ordersTable = new JTable(tableModel);
+        ordersTable.getTableHeader().setReorderingAllowed(false);
+        ordersTable.getTableHeader().setResizingAllowed(false);
         ordersTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
     @Override
     public void mouseMoved(java.awt.event.MouseEvent e) {
