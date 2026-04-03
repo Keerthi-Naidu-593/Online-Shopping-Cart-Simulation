@@ -71,7 +71,9 @@ ShoppingCartApp/
 │   │   ├── LoginFrame.java
 │   │   ├── SignupFrame.java
 │   │   ├── CustomerDashboard.java
+│   │   ├── CustomerSettingsPanel.java
 │   │   ├── AdminDashboard.java
+│   │   ├── AdminUserPanel.java
 │   │   ├── ProductCatalogPanel.java
 │   │   ├── ShoppingCartPanel.java
 │   │   ├── AdminProductPanel.java
