@@ -1,4 +1,4 @@
-# 🛍️ Shopping Cart Application
+# 🛍️ Shopping Cart Application (ShopVibe)
 
 A complete **Java Swing-based e-commerce application** with user authentication, product management, shopping cart, and order history features.
 
