@@ -33,7 +33,7 @@ public class AdminUserPanel extends JPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(240, 240, 240));
 
-        JLabel heading = new JLabel("Manage Users");
+        JLabel heading = new JLabel("Active Users");
         heading.setFont(new Font("Arial", Font.BOLD, 20));
         heading.setForeground(new Color(44, 62, 80));
   

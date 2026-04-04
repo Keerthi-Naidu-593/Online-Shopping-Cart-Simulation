@@ -38,7 +38,7 @@ public class BillGenerator {
             
             // ============ HEADER ============
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 24, Font.BOLD, new BaseColor(52, 152, 219));
-            Paragraph title = new Paragraph("️  SHOPPING CART INVOICE\n", titleFont);
+            Paragraph title = new Paragraph("️  SHOPVIBE INVOICE\n", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
             
@@ -104,8 +104,8 @@ public class BillGenerator {
             for (CartItem item : items) {
                 addTableDataCell(itemsTable, item.getProduct().getName(), dataFont);
                 addTableDataCell(itemsTable, String.valueOf(item.getQuantity()), dataFont);
-                addTableDataCell(itemsTable, "$" + String.format("%.2f", item.getProduct().getPrice()), dataFont);
-                addTableDataCell(itemsTable, "$" + String.format("%.2f", item.getSubtotal()), dataFont);
+                addTableDataCell(itemsTable, "Rs." + String.format("%.2f", item.getProduct().getPrice()), dataFont);
+                addTableDataCell(itemsTable, "Rs." + String.format("%.2f", item.getSubtotal()), dataFont);
             }
             
             document.add(itemsTable);
@@ -125,7 +125,7 @@ public class BillGenerator {
             totalLabelCell.setPadding(10);
             totalTable.addCell(totalLabelCell);
             
-            PdfPCell totalAmountCell = new PdfPCell(new Paragraph("$" + String.format("%.2f", total), totalLabelFont));
+            PdfPCell totalAmountCell = new PdfPCell(new Paragraph("Rs." + String.format("%.2f", total), totalLabelFont));
             totalAmountCell.setBackgroundColor(totalBgColor);
             totalAmountCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             totalAmountCell.setVerticalAlignment(Element.ALIGN_MIDDLE);

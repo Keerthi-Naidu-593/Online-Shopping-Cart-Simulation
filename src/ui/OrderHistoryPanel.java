@@ -264,7 +264,7 @@ header.setDefaultRenderer(new DefaultTableCellRenderer() {
             previewText.append("────────────────────────────────────────\n");
             previewText.append(String.format("%-30s ₹%.2f\n", "TOTAL AMOUNT:", totalAmount));
             previewText.append("════════════════════════════════════════\n\n");
-            previewText.append("Thank you for your purchase! ✨\n");
+            previewText.append("Thank you for your purchase!\n");
 
             // Show preview dialog
             JDialog previewDialog = new JDialog();
