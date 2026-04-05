@@ -57,14 +57,82 @@ public class OrderHistoryPanel extends JPanel {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(new Color(240, 240, 240));
 
-        String[] columns = {"Order ID", "Order Date", "Total (₹)", "Items", "Preview", "Download"};
+        String[] columns = {"Order ID", "Order Date", "Total (₹)", "Items"};
         tableModel = new DefaultTableModel(new Object[][]{}, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column == 4 || column == 5; // Only Preview & Download columns are editable
             }
         };
+        
+        // Bottom Button Panel
+JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+actionPanel.setBackground(new Color(240, 240, 240));
 
+// Preview Button
+JButton previewBtn = new JButton(" Preview ");
+previewBtn.setFont(new Font("Arial", Font.BOLD, 13));
+previewBtn.setBackground(new Color(52, 152, 219));
+previewBtn.setForeground(Color.WHITE);
+previewBtn.setPreferredSize(new Dimension(180, 40));
+previewBtn.setFocusPainted(false);
+previewBtn.setBorderPainted(false);
+previewBtn.setOpaque(true);
+
+addHoverEffect(previewBtn,
+    new Color(52, 152, 219),
+    new Color(41, 128, 185));
+
+previewBtn.addActionListener(e -> {
+    int selectedRow = ordersTable.getSelectedRow();
+
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this,
+            "Please select an order first!",
+            "No Selection",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int orderId = (Integer) ordersTable.getValueAt(selectedRow, 0);
+    previewBill(orderId);
+});
+
+actionPanel.add(previewBtn);
+
+// Download Button
+JButton downloadBtn = new JButton(" Download ");
+downloadBtn.setFont(new Font("Arial", Font.BOLD, 13));
+downloadBtn.setBackground(new Color(46, 204, 113));
+downloadBtn.setForeground(Color.WHITE);
+downloadBtn.setPreferredSize(new Dimension(180, 40));
+downloadBtn.setFocusPainted(false);
+downloadBtn.setBorderPainted(false);
+downloadBtn.setOpaque(true);
+
+addHoverEffect(downloadBtn,
+    new Color(46, 204, 113),
+    new Color(39, 174, 96));
+
+downloadBtn.addActionListener(e -> {
+    int selectedRow = ordersTable.getSelectedRow();
+
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this,
+            "Please select an order first!",
+            "No Selection",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int orderId = (Integer) ordersTable.getValueAt(selectedRow, 0);
+    downloadBill(orderId);
+});
+
+actionPanel.add(downloadBtn);
+
+// Add to main panel
+add(actionPanel, BorderLayout.SOUTH);
         
         ordersTable = new JTable(tableModel);
         ordersTable.getTableHeader().setReorderingAllowed(false);
@@ -128,14 +196,7 @@ header.setDefaultRenderer(new DefaultTableCellRenderer() {
         ordersTable.setOpaque(true);
         ordersTable.setFillsViewportHeight(true);
 
-        // Custom renderer for Preview button
-        ordersTable.getColumn("Preview").setCellRenderer(new ButtonRenderer());
-        ordersTable.getColumn("Preview").setCellEditor(new PreviewButtonEditor(new JCheckBox(), this));
-
-        // Custom renderer for Download button
-        ordersTable.getColumn("Download").setCellRenderer(new ButtonRenderer());
-        ordersTable.getColumn("Download").setCellEditor(new DownloadButtonEditor(new JCheckBox(), this));
-
+         
         JScrollPane scrollPane = new JScrollPane(ordersTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199), 1));
         scrollPane.getViewport().setBackground(Color.WHITE);
@@ -181,9 +242,8 @@ header.setDefaultRenderer(new DefaultTableCellRenderer() {
                         orderId,
                         orderDate,
                         "₹ " + String.format("%.2f", totalAmount),
-                        itemCount + " items",
-                        "️ Preview",
-                        "️ Download"
+                        itemCount + " items"
+                        
                 };
                 tableModel.addRow(row);
             }
@@ -299,7 +359,6 @@ header.setDefaultRenderer(new DefaultTableCellRenderer() {
         new Color(46, 204, 113),   // normal green
         new Color(39, 174, 96));   // darker green
 
-// 🔥 IMPORTANT FIXES
             downloadBtn.setFocusPainted(false);
             downloadBtn.setBorderPainted(false);
             downloadBtn.setOpaque(true);
@@ -319,7 +378,7 @@ header.setDefaultRenderer(new DefaultTableCellRenderer() {
             addHoverEffect(closeBtn,
         new Color(231, 76, 60),    // normal red
         new Color(192, 57, 43));   // darker red
-// 🔥 IMPORTANT FIXES
+
             closeBtn.setFocusPainted(false);
             closeBtn.setBorderPainted(false);
             closeBtn.setOpaque(true);

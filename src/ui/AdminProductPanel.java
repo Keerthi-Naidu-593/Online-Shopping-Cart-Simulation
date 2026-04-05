@@ -261,7 +261,7 @@ add(topPanel, BorderLayout.NORTH);
         return;
     }
 
-    // ✅ INSERT (your original code)
+    
     PreparedStatement stmt = con.prepareStatement(
             "INSERT INTO products (name, description, price, stock, category) VALUES (?, ?, ?, ?, ?)");
 

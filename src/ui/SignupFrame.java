@@ -293,29 +293,31 @@ public class SignupFrame extends JFrame {
             return;
         }
 
-        if (address.length() < 10) {
-            errorLabel.setText("Address must be at least 10 characters");
-            addressArea.requestFocus();
-            return;
-        }
-
         if (password.isEmpty()) {
-            errorLabel.setText("Password is required");
-            passwordField.requestFocus();
-            return;
-        }
+    errorLabel.setText("Password is required");
+    passwordField.requestFocus();
+    return;
+}
 
-        if (password.length() < 6) {
-            errorLabel.setText("Password must be at least 6 characters");
-            passwordField.requestFocus();
-            return;
-        }
+if (password.length() < 8) {
+    errorLabel.setText("Minimum 8 characters required");
+    passwordField.requestFocus();
+    return;
+}
 
-        if (!password.equals(confirm)) {
-            errorLabel.setText("Passwords don't match");
-            confirmField.requestFocus();
-            return;
-        }
+String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$";
+
+if (!password.matches(passwordPattern)) {
+    errorLabel.setText("Use upper, lower, number & special char");
+    passwordField.requestFocus();
+    return;
+}
+
+if (!password.equals(confirm)) {
+    errorLabel.setText("Passwords don't match");
+    confirmField.requestFocus();
+    return;
+}     
 
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement stmt = con.prepareStatement(

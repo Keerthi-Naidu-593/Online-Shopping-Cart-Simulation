@@ -149,7 +149,20 @@ public class LoginFrame extends JFrame {
         passwordField.setMaximumSize(new Dimension(300, 40));
         rightPanel.add(passwordField);
         rightPanel.add(Box.createVerticalStrut(30));
+        
+        JButton forgotBtn = new JButton("Forgot Password?");
+        forgotBtn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        forgotBtn.setForeground(new Color(52, 152, 219));
+        forgotBtn.setBorder(BorderFactory.createEmptyBorder());
+        forgotBtn.setContentAreaFilled(false);
+        forgotBtn.setFocusPainted(false);
+        forgotBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        forgotBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        forgotBtn.addActionListener(e -> openForgotPasswordDialog());
+
+        rightPanel.add(forgotBtn);
+        rightPanel.add(Box.createVerticalStrut(15));
         // Login button
         JButton loginButton = new JButton("Sign In");
         loginButton.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -265,4 +278,147 @@ public class LoginFrame extends JFrame {
             System.err.println("Error: " + ex.getMessage());
         }
     }
+   private void openForgotPasswordDialog() {
+    JDialog dialog = new JDialog(this, "Reset Password", true);
+    dialog.setSize(400, 350);
+    dialog.setLocationRelativeTo(this);
+    dialog.setResizable(false);
+
+    JPanel panel = new JPanel();
+    panel.setBackground(new Color(240, 240, 240));
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+    // Heading
+    JLabel heading = new JLabel("Reset Password");
+    heading.setFont(new Font("Segoe UI", Font.BOLD, 20));
+    heading.setForeground(new Color(44, 62, 80));
+    heading.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(heading);
+    panel.add(Box.createVerticalStrut(20));
+
+    // Username
+    JLabel userLabel = new JLabel("Username");
+    userLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+    userLabel.setForeground(new Color(44, 62, 80));
+    userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(userLabel);
+    panel.add(Box.createVerticalStrut(5));
+
+    JTextField usernameField = new JTextField();
+    usernameField.setMaximumSize(new Dimension(300, 40));
+    usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    usernameField.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
+    panel.add(usernameField);
+    panel.add(Box.createVerticalStrut(15));
+
+    // Email
+    JLabel emailLabel = new JLabel("Email");
+    emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+    emailLabel.setForeground(new Color(44, 62, 80));
+    emailLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(emailLabel);
+    panel.add(Box.createVerticalStrut(5));
+
+    JTextField emailField = new JTextField();
+    emailField.setMaximumSize(new Dimension(300, 40));
+    emailField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    emailField.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
+    panel.add(emailField);
+    panel.add(Box.createVerticalStrut(15));
+
+    // Password
+    JLabel passLabel = new JLabel("New Password");
+    passLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+    passLabel.setForeground(new Color(44, 62, 80));
+    passLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    panel.add(passLabel);
+    panel.add(Box.createVerticalStrut(5));
+
+    JPasswordField passwordField = new JPasswordField();
+    passwordField.setMaximumSize(new Dimension(300, 40));
+    passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    passwordField.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
+    panel.add(passwordField);
+    panel.add(Box.createVerticalStrut(25));
+
+    // Reset Button
+    JButton resetBtn = new JButton("Reset Password");
+    resetBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+    resetBtn.setBackground(new Color(52, 152, 219));
+    resetBtn.setForeground(Color.WHITE);
+    resetBtn.setFocusPainted(false);
+    resetBtn.setBorderPainted(false);
+    resetBtn.setOpaque(true);
+    resetBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    resetBtn.setMaximumSize(new Dimension(300, 45));
+    resetBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    // Hover effect
+    resetBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseEntered(java.awt.event.MouseEvent evt) {
+            resetBtn.setBackground(new Color(41, 128, 185));
+        }
+
+        public void mouseExited(java.awt.event.MouseEvent evt) {
+            resetBtn.setBackground(new Color(52, 152, 219));
+        }
+    });
+
+    resetBtn.addActionListener(e -> {
+        String username = usernameField.getText().trim();
+        String email = emailField.getText().trim();
+        String newPassword = new String(passwordField.getPassword());
+
+        if (username.isEmpty() || email.isEmpty() || newPassword.isEmpty()) {
+    JOptionPane.showMessageDialog(dialog, "All fields required!");
+    return;
+}
+
+if (newPassword.length() < 8) {
+    JOptionPane.showMessageDialog(dialog, "Password must be at least 8 characters!");
+    return;
+}
+
+String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$";
+
+if (!newPassword.matches(passwordPattern)) {
+    JOptionPane.showMessageDialog(dialog,
+        "Password must contain uppercase, lowercase, number & special character!");
+    return;
+}
+
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement checkStmt = con.prepareStatement(
+                     "SELECT * FROM users WHERE username=? AND email=?")) {
+
+            checkStmt.setString(1, username);
+            checkStmt.setString(2, email);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                PreparedStatement updateStmt = con.prepareStatement(
+                        "UPDATE users SET password=? WHERE username=?");
+
+                updateStmt.setString(1, newPassword);
+                updateStmt.setString(2, username);
+                updateStmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(dialog, "Password reset successful!");
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Invalid username or email!");
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Error: " + ex.getMessage());
+        }
+    });
+
+    panel.add(resetBtn);
+
+    dialog.add(panel);
+    dialog.setVisible(true);
+}
+
 }
