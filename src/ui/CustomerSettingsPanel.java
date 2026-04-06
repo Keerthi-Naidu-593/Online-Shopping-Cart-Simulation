@@ -17,7 +17,7 @@ public class CustomerSettingsPanel extends JPanel {
 
     private JTextField usernameField, emailField, phoneField, addressField;
     private JPasswordField passwordField, confirmField;
-
+     private String originalEmail, originalPhone, originalAddress, originalPassword;
     private JLabel errorLabel;
 
     public CustomerSettingsPanel(User currentUser) {
@@ -129,80 +129,157 @@ public class CustomerSettingsPanel extends JPanel {
 
     // ===== LOAD USER DATA =====
     private void loadUserDetails() {
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "SELECT * FROM users WHERE id = ?")) {
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement stmt = con.prepareStatement(
+                 "SELECT * FROM users WHERE id = ?")) {
 
-            stmt.setInt(1, currentUser.getId());
-            ResultSet rs = stmt.executeQuery();
+        stmt.setInt(1, currentUser.getId());
+        ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                usernameField.setText(rs.getString("username"));
-                emailField.setText(rs.getString("email"));
-                phoneField.setText(rs.getString("phone"));
-                addressField.setText(rs.getString("address"));
-                passwordField.setText(rs.getString("password"));
-                confirmField.setText(rs.getString("password"));
-            }
+        if (rs.next()) {
+            String username = rs.getString("username");
+            String email = rs.getString("email");
+            String phone = rs.getString("phone");
+            String address = rs.getString("address");
+            String password = rs.getString("password");
 
-        } catch (SQLException ex) {
-            System.err.println("Error loading user: " + ex.getMessage());
+            usernameField.setText(username);
+            emailField.setText(email);
+            phoneField.setText(phone);
+            addressField.setText(address);
+            passwordField.setText(password);
+            confirmField.setText(password);
+
+            // ✅ store original values
+            originalEmail = email;
+            originalPhone = phone;
+            originalAddress = address;
+            originalPassword = password;
         }
+
+    } catch (SQLException ex) {
+        System.err.println("Error loading user: " + ex.getMessage());
     }
+}
 
     // ===== UPDATE =====
     private void updateDetails() {
 
-        String email = emailField.getText().trim();
-        String phone = phoneField.getText().trim();
-        String address = addressField.getText().trim();
-        String password = new String(passwordField.getPassword());
-        String confirm = new String(confirmField.getPassword());
+    String email = emailField.getText().trim();
+    String phone = phoneField.getText().trim();
+    String address = addressField.getText().trim();
+    String password = new String(passwordField.getPassword());
+    String confirm = new String(confirmField.getPassword());
 
-        if (email.isEmpty() || !email.contains("@") || !email.contains(".")) {
-            errorLabel.setText("Invalid email");
-            return;
-        }
-
-        if (phone.isEmpty() || phone.length() != 10 || !phone.matches("\\d+")) {
-            errorLabel.setText("Phone must be 10 digits");
-            return;
-        }
-
-        if (address.isEmpty() || address.length() < 10) {
-            errorLabel.setText("Address must be at least 10 characters");
-            return;
-        }
-
-        if (password.length() < 6) {
-            errorLabel.setText("Password must be at least 6 characters");
-            return;
-        }
-
-        if (!password.equals(confirm)) {
-            errorLabel.setText("Passwords don't match");
-            return;
-        }
-
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "UPDATE users SET email=?, phone=?, address=?, password=? WHERE id=?")) {
-
-            stmt.setString(1, email);
-            stmt.setString(2, phone);
-            stmt.setString(3, address);
-            stmt.setString(4, password);
-            stmt.setInt(5, currentUser.getId());
-
-            stmt.executeUpdate();
-
-            JOptionPane.showMessageDialog(this, "✅ Updated successfully");
-            errorLabel.setText("");
-
-        } catch (SQLException ex) {
-            errorLabel.setText("Update failed");
-        }
+    // ===== EMAIL VALIDATION =====
+    if (email.isEmpty()) {
+        errorLabel.setText("Email is required");
+        emailField.requestFocus();
+        return;
     }
+
+    if (!email.contains("@") || !email.contains(".")) {
+        errorLabel.setText("Invalid email format");
+        emailField.requestFocus();
+        return;
+    }
+
+    // ===== PHONE VALIDATION (MANDATORY) =====
+    if (phone.isEmpty()) {
+        errorLabel.setText("Phone number is required");
+        phoneField.requestFocus();
+        return;
+    }
+
+    if (phone.length() != 10) {
+        errorLabel.setText("Phone number must be exactly 10 digits");
+        phoneField.requestFocus();
+        return;
+    }
+
+    if (!phone.matches("\\d+")) {
+        errorLabel.setText("Phone number must contain only digits");
+        phoneField.requestFocus();
+        return;
+    }
+
+    // ===== ADDRESS VALIDATION =====
+    if (address.isEmpty()) {
+        errorLabel.setText("Address is required");
+        addressField.requestFocus();
+        return;
+    }
+
+    if (address.length() < 10) {
+        errorLabel.setText("Address must be at least 10 characters");
+        addressField.requestFocus();
+        return;
+    }
+
+    // ===== PASSWORD VALIDATION (STRONG) =====
+    if (password.isEmpty()) {
+        errorLabel.setText("Password is required");
+        passwordField.requestFocus();
+        return;
+    }
+
+    if (password.length() < 8) {
+        errorLabel.setText("Minimum 8 characters required");
+        passwordField.requestFocus();
+        return;
+    }
+
+    String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$";
+
+    if (!password.matches(passwordPattern)) {
+        errorLabel.setText("Use upper, lower, number & special char");
+        passwordField.requestFocus();
+        return;
+    }
+
+    if (!password.equals(confirm)) {
+        errorLabel.setText("Passwords don't match");
+        confirmField.requestFocus();
+        return;
+    }
+
+    // ===== CHECK NO CHANGES =====
+    if (email.equals(originalEmail) &&
+        phone.equals(originalPhone) &&
+        address.equals(originalAddress) &&
+        password.equals(originalPassword)) {
+
+        JOptionPane.showMessageDialog(this, "No changes detected");
+        return;
+    }
+
+    // ===== UPDATE DATABASE =====
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement stmt = con.prepareStatement(
+                 "UPDATE users SET email=?, phone=?, address=?, password=? WHERE id=?")) {
+
+        stmt.setString(1, email);
+        stmt.setString(2, phone);
+        stmt.setString(3, address);
+        stmt.setString(4, password);
+        stmt.setInt(5, currentUser.getId());
+
+        stmt.executeUpdate();
+
+        // update original values
+        originalEmail = email;
+        originalPhone = phone;
+        originalAddress = address;
+        originalPassword = password;
+
+        JOptionPane.showMessageDialog(this, "✅ Updated successfully");
+        errorLabel.setText("");
+
+    } catch (SQLException ex) {
+        errorLabel.setText("Update failed");
+    }
+}
+
 
     // ===== DELETE ACCOUNT =====
     private void deleteAccount() {
