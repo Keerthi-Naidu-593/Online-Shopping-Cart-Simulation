@@ -26,7 +26,8 @@ public class AdminDashboard extends JFrame {
         setSize(1200, 700);
         setLocationRelativeTo(null);
         setResizable(true);
-
+         setExtendedState(JFrame.MAXIMIZED_BOTH);
+         setVisible(true);
         // Top Bar
         JPanel topPanel = new JPanel();
         topPanel.setBackground(UITheme.SECONDARY);

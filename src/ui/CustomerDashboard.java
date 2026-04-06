@@ -28,6 +28,8 @@ public class CustomerDashboard extends JFrame {
         setSize(1100, 700);
         setLocationRelativeTo(null);
         setResizable(true);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+         setVisible(true);
 
         // Top Bar
         JPanel topPanel = new JPanel();

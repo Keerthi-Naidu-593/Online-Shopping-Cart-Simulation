@@ -38,11 +38,21 @@ public class CheckoutFrame extends JFrame {
 
     private void setupUI() {
         setTitle("Checkout - Order Summary");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+         
+
+    addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent e) {
+            new CustomerDashboard(currentUser);
+            dispose();
+        }
+    });
+
         setSize(900, 600);
         setLocationRelativeTo(null);
         setResizable(false);
-
+        
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(new Color(240, 240, 240));
         mainPanel.setLayout(new BorderLayout(20, 20));

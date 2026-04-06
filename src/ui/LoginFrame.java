@@ -41,12 +41,7 @@ public class LoginFrame extends JFrame {
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBorder(BorderFactory.createEmptyBorder(50, 30, 50, 30));
 
-        /*JLabel logoLabel = new JLabel("️");
-        logoLabel.setFont(new Font("Arial", Font.BOLD, 80));
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        leftPanel.add(Box.createVerticalStrut(20));
-        leftPanel.add(logoLabel);
-        leftPanel.add(Box.createVerticalStrut(20));*/
+        
 
         JLabel titleLabel = new JLabel("ShopVibe");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
